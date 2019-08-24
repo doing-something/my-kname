@@ -23,7 +23,7 @@ const OverlayMenu = memo(({
     return (
         <OverlayWrap isVisible={isVisible}>
             <CloseButton type="button" onClick={onClose}>
-                <Times size="80" />
+                <Times size="60" />
             </CloseButton>
             <ListWrap>
                 <List>

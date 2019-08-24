@@ -2,10 +2,14 @@ import styled from 'styled-components/macro';
 
 export const Wrap = styled.div`
     display: flex;
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    min-width: 320px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     align-items: center;
     justify-content: center;
 `;
@@ -15,6 +19,7 @@ export const FormWrap = styled.div`
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -50,19 +55,22 @@ export const SubmitButton = styled.button`
 `;
 
 export const Result = styled.div`
-    padding: 30vw 20px;
+    display: flex;
+    padding: 2em 10vw;
     word-break:break-all;
-    text-align: center;
+    justify-content: center;
+    align-items: center;
     font-size: ${props => (props.fontIndex ? `${60 + props.fontIndex}px` : '40px')};
 `;
 
 export const PreviewUtils = styled.div`
-    position: absolute;
+    position: fixed;
     top: 30px;
     left: 50%;
     width: 100%;
     text-align: center;
     transform: translateX(-50%);
+    background-color: #fff;
 `;
 
 export const RoundButton = styled.button`
@@ -157,4 +165,23 @@ export const SaveButton = styled(RoundButton)`
     bottom: 30px;
     width: 50px;
     height: 50px;
+    background-color: #fff;
+`;
+
+export const ResultModal = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+export const ResultGuide = styled.div`
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1em;
+    line-height: 1.4;
+    background-color: rgba(0, 0, 0, .1);
 `;

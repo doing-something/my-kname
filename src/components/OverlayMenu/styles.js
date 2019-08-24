@@ -7,6 +7,7 @@ export const OverlayWrap = styled.div`
     height: 100%;
     top: 0;
     left: 0;
+    overflow: hidden;
     background: rgba(153, 204, 51, 0.9);
     z-index: 1;
     justify-content: center;
@@ -35,8 +36,8 @@ export const CloseButton = styled.button`
     position: absolute;
     width: 80px;
     height: 80px;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     overflow: hidden;
     border: 0;
     color: #fff;

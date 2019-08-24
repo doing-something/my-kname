@@ -36,9 +36,10 @@ const TextField = memo(
         onFocus,
         required,
         error,
+        value,
     }) => {
         const [state, dispatch] = useReducer(reducer, {
-            inputValue: '',
+            inputValue: value,
         });
 
         const handleChange = e => {
@@ -82,7 +83,7 @@ const TextField = memo(
         );
     },
     (prevProps, nextProps) => compareProperties()([
-        'error', 'disabled'
+        'error', 'disabled', 'value'
     ])
 );
 
@@ -93,6 +94,7 @@ TextField.prototype = {
     title: PropTypes.string,
     error: PropTypes.string,
     type: PropTypes.string,
+    value: PropTypes.string,
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
     required: PropTypes.bool,

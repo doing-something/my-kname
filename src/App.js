@@ -17,18 +17,19 @@ import {
     SizeButton,
     SizeButtonLabel,
     FontSelector,
-    SaveButton
+    SaveButton,
+    ResultModal,
+    ResultGuide
 } from 'styles';
 // components
 import TextField from 'components/TextField';
 import OverlayMenu from 'components/OverlayMenu';
+import If from 'components/If';
+import Modal from 'components/Modal';
 import { Pen, Plus, Minus } from 'styled-icons/fa-solid';
 import { Eye, Save } from 'styled-icons/fa-regular';
 // hooks
 import useValidation, { isRequired, lengthBetween } from 'hooks/useValidation';
-// utils
-import getRandomString from 'utils/getRandomString';
-import { Like } from 'styled-icons/boxicons-regular';
 // constants
 const SET_RESULT = 'SET_RESULT';
 const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
@@ -37,6 +38,7 @@ const PREVIEW_MODE = 'PREVIEW_MODE';
 const UPDATE_FONT_SIZE = 'UPDATE_FONT_SIZE';
 const UPDATE_FONT_FAMILY = 'UPDATE_FONT_FAMILY';
 const TOGGLE_LANGUAGE_OPTIONS = 'TOGGLE_LANGUAGE_OPTIONS';
+const TOGGLE_RESULT_MODAL = 'TOGGLE_RESULT_MODAL';
 const FONT_INDEX = 10;
 const fontFamilies = [
     'Noto Sans KR',
@@ -66,6 +68,8 @@ const fontFamilies = [
     'Hi Melody'
 ];
 
+// TODO: google font picker의 폰트 동적 로딩
+
 function reducer(state, { type, payload }) {
     switch (type) {
         case SET_RESULT:
@@ -74,19 +78,26 @@ function reducer(state, { type, payload }) {
                 result: decodeURIComponent(payload), 
                 isSubmitted: true,
                 isPreview: true,
+                isEditable: false
         };
         case SELECT_LANGUAGE:
             return { ...state, langIndex: payload };
         case EDIT_MODE:
-            return { ...state, isPreview: false };
+            return { ...state, isPreview: false, isEditable: true };
         case PREVIEW_MODE:
-            return { ...state, isPreview: true };
+            return { ...state, isPreview: true, isEditable: false };
         case UPDATE_FONT_SIZE:
             return { ...state, fontIndex: state.fontIndex + payload };
         case UPDATE_FONT_FAMILY:
             return { ...state, activeFontFamily: payload };
         case TOGGLE_LANGUAGE_OPTIONS:
             return { ...state, isLanguageOptionVisible: payload };
+        case TOGGLE_RESULT_MODAL:
+                return { 
+                    ...state, 
+                    isResultModalVisible: !state.isResultModalVisible,
+                    imgUrl: state.isResultModalVisible ? null : payload
+                };
         default:
             return state;
     }
@@ -97,7 +108,7 @@ const configs = {
         yourname: {
             rules: [
                 [isRequired, 'Please fill out your name.'],
-                [lengthBetween(2, 35), 'The text length must be between 2 and 35.'],
+                [lengthBetween(2, 50), 'The text length must be between 2 and 35.'],
             ],
         }
     },
@@ -133,7 +144,9 @@ function App() {
         isSubmitted: false,
         isPreview: false,
         fontIndex: 0,
-        activeFontFamily: 'Roboto'
+        isResultModalVisible: false,
+        activeFontFamily: 'Roboto',
+        imgUrl: null
     });
 
     const { 
@@ -142,12 +155,15 @@ function App() {
         isLanguageOptionVisible, 
         isSubmitted, 
         isPreview,
+        isEditable,
         fontIndex,
-        activeFontFamily
+        activeFontFamily,
+        isResultModalVisible,
+        imgUrl
     } = state;
     const submitButtonRef = useRef();
     const resultRef = useRef();
-    
+  
     const submitForm = useCallback(({ values, isFormValid }) => {
         const srcLang = langs[langIndex].value;
         const query = values['yourname'];
@@ -214,17 +230,21 @@ function App() {
             });
     };
 
+    const closeModal = () => {
+        dispatch({ type: TOGGLE_RESULT_MODAL, payload: null });
+    };
+
     function saveImage(uri) {
         const link = document.createElement('a');
- 
+
         if (typeof link.download === 'string') {
             link.href = uri;
-            link.download = `kname-${getRandomString(5)}.png`;
+            link.download = `kname-${Date.now()}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         } else {
-            window.open(uri);
+            dispatch({ type: TOGGLE_RESULT_MODAL, payload: uri });
         }
     }
 
@@ -291,21 +311,31 @@ function App() {
                         options={langs}
                         onSelect={handleSelectLang}
                     />
-                    {result && (
+             
+                    <If condition={!!result}>
                         <SaveButton type="button" onClick={handleSaveImage}>
                             <Save size="20" />
                         </SaveButton>
-                    )}
-                    {isSubmitted && result && (
+                    </If>
+                    {isSubmitted && !isEditable && !!result && (
                         <Result 
                             className="apply-font" 
-                            fontIndex={fontIndex}
                             ref={resultRef}
+                            fontIndex={fontIndex}
                         >{result}</Result>
                     )}
-                    {isSubmitted && !result && (
+                    <If condition={isSubmitted && !result}>
                         <Result>No Result.</Result>
-                    )}
+                    </If>
+                    <Modal isVisible={isResultModalVisible} onClose={closeModal}>
+                        <ResultModal>
+                            <ResultGuide>
+                            To save, right click or touch and hold the image 
+                            and choose 'Save Image'.
+                            </ResultGuide>
+                            <img src={imgUrl} alt={result} />
+                        </ResultModal>
+                    </Modal>
                 </FormWrap>
             </Wrap>
         </>
