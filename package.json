@@ -1,0 +1,38 @@
+{
+  "name": "your-kname",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "font-picker-react": "^3.3.0",
+    "html2canvas": "^1.0.0-rc.3",
+    "ramda": "^0.26.1",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-scripts": "3.1.1",
+    "styled-components": "^4.3.2",
+    "styled-icons": "^8.3.0",
+    "styled-normalize": "^8.0.6",
+    "use-deep-compare-effect": "^1.2.0"
+  },
+  "scripts": {
+    "start": "export $(cat .env.development) && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
