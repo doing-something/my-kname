@@ -60,6 +60,7 @@ export const Result = styled.div`
     word-break:break-all;
     justify-content: center;
     align-items: center;
+    text-align: center;
     font-size: ${props => (props.fontIndex ? `${60 + props.fontIndex}px` : '40px')};
 `;
 
@@ -184,4 +185,14 @@ export const ResultGuide = styled.div`
     padding: 1em;
     line-height: 1.4;
     background-color: rgba(0, 0, 0, .1);
+`;
+
+export const ErrorWrap = styled.div`
+    text-align: center;
+`;
+
+export const ErrorEmoji = styled.div`
+    margin: .5em 0;
+    font-size: 40px;
+    color: rgba(0, 0, 0, .4);
 `;

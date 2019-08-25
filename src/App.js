@@ -1,8 +1,11 @@
 import React, { useRef, useReducer, useCallback } from 'react';
+import * as Sentry from '@sentry/browser';
+import { API } from 'aws-amplify';
 import { Normalize } from 'styled-normalize';
 import FontPicker from 'font-picker-react';
 import html2canvas from 'html2canvas';
 import GlobalStyles from 'styles/GlobalStyles';
+import config from './aws-exports';
 import { 
     Wrap, 
     Form, 
@@ -19,7 +22,9 @@ import {
     FontSelector,
     SaveButton,
     ResultModal,
-    ResultGuide
+    ResultGuide,
+    ErrorWrap,
+    ErrorEmoji
 } from 'styles';
 // components
 import TextField from 'components/TextField';
@@ -39,6 +44,7 @@ const UPDATE_FONT_SIZE = 'UPDATE_FONT_SIZE';
 const UPDATE_FONT_FAMILY = 'UPDATE_FONT_FAMILY';
 const TOGGLE_LANGUAGE_OPTIONS = 'TOGGLE_LANGUAGE_OPTIONS';
 const TOGGLE_RESULT_MODAL = 'TOGGLE_RESULT_MODAL';
+const TOGGLE_ERROR_MODAL = 'TOGGLE_ERROR_MODAL';
 const FONT_INDEX = 10;
 const fontFamilies = [
     'Noto Sans KR',
@@ -68,7 +74,11 @@ const fontFamilies = [
     'Hi Melody'
 ];
 
-// TODO: google font picker의 폰트 동적 로딩
+API.configure(config);
+Sentry.init({dsn: 'https://7b8be62a0e12431182afe1131d783fb3@sentry.io/1540874'});
+
+// TODO1: google font picker의 폰트 동적 로딩
+// TODO2: 에러 메시지 세분화 
 
 function reducer(state, { type, payload }) {
     switch (type) {
@@ -98,6 +108,12 @@ function reducer(state, { type, payload }) {
                     isResultModalVisible: !state.isResultModalVisible,
                     imgUrl: state.isResultModalVisible ? null : payload
                 };
+        case TOGGLE_ERROR_MODAL:
+            return { 
+                ...state, 
+                isErrorModalVisible: !state.isErrorModalVisible,
+                error: state.isErrorModalVisible ? null : payload
+            };
         default:
             return state;
     }
@@ -145,47 +161,50 @@ function App() {
         isPreview: false,
         fontIndex: 0,
         isResultModalVisible: false,
+        isErrorModalVisible: false,
         activeFontFamily: 'Roboto',
-        imgUrl: null
+        imgUrl: null,
+        error: ''
     });
 
     const { 
         result, 
         langIndex, 
         isLanguageOptionVisible, 
+        isErrorModalVisible,
         isSubmitted, 
         isPreview,
         isEditable,
         fontIndex,
         activeFontFamily,
         isResultModalVisible,
-        imgUrl
+        imgUrl,
+        error
     } = state;
     const submitButtonRef = useRef();
     const resultRef = useRef();
   
-    const submitForm = useCallback(({ values, isFormValid }) => {
+    const submitForm = useCallback(async ({ values, isFormValid }) => {
         const srcLang = langs[langIndex].value;
         const query = values['yourname'];
         
         if (!isFormValid) return;
-        
-        const headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-        };
+
         submitButtonRef.current && submitButtonRef.current.focus();
-        return fetch(`${process.env.REACT_APP_API_URL}/kname`, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                query: encodeURIComponent(query),
+
+        try {
+            await API.post('knameapi', '/kname', { body: { 
+                    query: encodeURIComponent(query),
                     srcLang
-                }),
-            }).then((res) => {
-                return res.json();
-            }).then(resJson => {
-                dispatch({ type: SET_RESULT, payload: resJson.translated_text[0][0] });
-            }).catch(err => alert(err.message));
+                }})
+                .then(data => {
+                    dispatch({ type: SET_RESULT, payload: data.body.translated_text[0][0] });
+                })
+                .catch(err => Promise.reject(err));
+        } catch(err) {
+            dispatch({ type: TOGGLE_ERROR_MODAL, payload: 'There was a error.' });
+            Sentry.captureException(err);
+        }
     }, [langIndex]);
 
     const { getFieldProps, handleSubmit } = useValidation(
@@ -230,8 +249,12 @@ function App() {
             });
     };
 
-    const closeModal = () => {
+    const closeResultModal = () => {
         dispatch({ type: TOGGLE_RESULT_MODAL, payload: null });
+    };
+
+    const toggleErrorModal = () => {
+        dispatch({ type: TOGGLE_ERROR_MODAL });
     };
 
     function saveImage(uri) {
@@ -327,7 +350,7 @@ function App() {
                     <If condition={isSubmitted && !result}>
                         <Result>No Result.</Result>
                     </If>
-                    <Modal isVisible={isResultModalVisible} onClose={closeModal}>
+                    <Modal isVisible={isResultModalVisible} onClose={closeResultModal}>
                         <ResultModal>
                             <ResultGuide>
                             To save, right click or touch and hold the image 
@@ -335,6 +358,13 @@ function App() {
                             </ResultGuide>
                             <img src={imgUrl} alt={result} />
                         </ResultModal>
+                    </Modal>
+
+                    <Modal isVisible={isErrorModalVisible} onClose={toggleErrorModal}>
+                        <ErrorWrap>
+                            <ErrorEmoji>{'(>_<)'}</ErrorEmoji>
+                            <div>{error}</div>
+                        </ErrorWrap>
                     </Modal>
                 </FormWrap>
             </Wrap>

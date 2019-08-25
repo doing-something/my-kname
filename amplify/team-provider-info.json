@@ -1,0 +1,31 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "my-kname-dev-20190824232259-authRole",
+            "UnauthRoleArn": "arn:aws:iam::930589189284:role/my-kname-dev-20190824232259-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::930589189284:role/my-kname-dev-20190824232259-authRole",
+            "Region": "ap-northeast-2",
+            "DeploymentBucketName": "my-kname-dev-20190824232259-deployment",
+            "UnauthRoleName": "my-kname-dev-20190824232259-unauthRole",
+            "StackName": "my-kname-dev-20190824232259",
+            "StackId": "arn:aws:cloudformation:ap-northeast-2:930589189284:stack/my-kname-dev-20190824232259/ad092c00-c67a-11e9-a97c-021e10f3cfb0"
+        }
+    },
+    "master": {
+        "awscloudformation": {
+            "AuthRoleName": "my-kname-master-20190825155926-authRole",
+            "UnauthRoleArn": "arn:aws:iam::930589189284:role/my-kname-master-20190825155926-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::930589189284:role/my-kname-master-20190825155926-authRole",
+            "Region": "ap-northeast-2",
+            "DeploymentBucketName": "my-kname-master-20190825155926-deployment",
+            "UnauthRoleName": "my-kname-master-20190825155926-unauthRole",
+            "StackName": "my-kname-master-20190825155926",
+            "StackId": "arn:aws:cloudformation:ap-northeast-2:930589189284:stack/my-kname-master-20190825155926/e07022c0-c705-11e9-a8dc-06117064d77a"
+        },
+        "categories": {
+            "function": {
+                "knamefunction": {}
+            }
+        }
+    }
+}

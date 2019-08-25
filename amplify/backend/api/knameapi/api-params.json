@@ -1,0 +1,34 @@
+{
+    "paths": [
+        {
+            "name": "/kname",
+            "lambdaFunction": "knamefunction",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "knameapi",
+    "apiName": "knameapi",
+    "functionArns": [
+        {
+            "lambdaFunction": "knamefunction"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "my-kname-dev-20190824232259-authRole",
+        "unAuthRoleName": "my-kname-dev-20190824232259-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "knamefunction",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}

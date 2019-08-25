@@ -6,7 +6,12 @@ import { Times } from 'styled-icons/fa-solid';
 // styles
 import { ModalWrap, Modal, ModalContainer, ModalContent, CloseButton } from './styles';
 
-const ModalComponent = ({ isVisible, children, buttonText, onClose }) => {
+const ModalComponent = ({ 
+    isVisible, 
+    children, 
+    full,
+    onClose 
+}) => {
     const [isModalVisible, setIsVisible] = useState(isVisible);
     
     const handleClick = () => {
@@ -21,7 +26,7 @@ const ModalComponent = ({ isVisible, children, buttonText, onClose }) => {
     return isModalVisible
         ? ReactDOM.createPortal(
             <React.Fragment>
-                <ModalWrap>
+                <ModalWrap full>
                     <Modal>
                         <ModalContainer>
                             <ModalContent>{children}</ModalContent>
@@ -39,19 +44,19 @@ const ModalComponent = ({ isVisible, children, buttonText, onClose }) => {
 
 ModalComponent.propTypes = {
     isVisible: PropTypes.bool,
+    full: PropTypes.bool,
     close: PropTypes.func,
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node,
     ]).isRequired,
-    buttonText: PropTypes.string,
 };
 
 ModalComponent.defaultProps = {
     isVisible: false,
+    full: false,
     close: () => {},
     children: React.createElement('div'),
-    buttonText: '',
 };
 
 export default ModalComponent;

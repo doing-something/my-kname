@@ -24,9 +24,10 @@ export const Modal = styled.div`
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
     padding: 30px 20px;
+    width: ${props => (props.full ? '100%' : '70vw')};
+    height: ${props => (props.full ? '100%' : 'auto')};
+    max-width: ${props => (props.full ? '100%' : '500px')};
 `;
 
 export const ModalContainer = styled.div`
