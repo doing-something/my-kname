@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef, useCallback } from 'react';
+import React, { memo, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 // hooks
@@ -35,7 +35,7 @@ const DropDown = memo(({
     const [isOptionVisible, setIsOptionVisible] = useState(false);
     const containerRef = useRef();
     const itemRef = useRef();
-    const handleOptionsOpen = useCallback(() => setIsOptionVisible(false), []);
+    const handleOptionsOpen = () => setIsOptionVisible(false);
     useOnClickOutside(dropdownRef, handleOptionsOpen);
 
     const [selectedIndex, setSelectedIndex] = useState(findIndexByValue(options, value));

@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useCallback } from 'react';
+import React, { useRef, useReducer } from 'react';
 import * as Sentry from '@sentry/browser';
 import { API } from 'aws-amplify';
 import { Normalize } from 'styled-normalize';
@@ -184,7 +184,7 @@ function App() {
     const submitButtonRef = useRef();
     const resultRef = useRef();
   
-    const submitForm = useCallback(async ({ values, isFormValid }) => {
+    const submitForm = async ({ values, isFormValid }) => {
         const srcLang = langs[langIndex].value;
         const query = values['yourname'];
         
@@ -205,7 +205,7 @@ function App() {
             dispatch({ type: TOGGLE_ERROR_MODAL, payload: 'There was a error.' });
             Sentry.captureException(err);
         }
-    }, [langIndex]);
+    };
 
     const { getFieldProps, handleSubmit } = useValidation(
         configs,

@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useCallback } from 'react';
+import { useReducer } from 'react';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import validate from './validate';
 // constants
@@ -15,7 +15,6 @@ function reducer(state, { type, payload }) {
             return {
                 ...state,
                 values,
-                errors: {},
             };
         case VALIDATE:
             return { ...state, errors: payload };
@@ -34,12 +33,8 @@ const useForm = (config = {}, submitCallback) => {
     if (typeof config === 'function') config = config(state.values);
     if (!config.fields) throw Error('invalid config');
 
-    const errors = useMemo(() => getErrors(state, config), [state, config]);
-    const handleSubmit = useCallback(onSubmit, [state.values, errors]);
-    const isFormValid = useMemo(
-        () => Object.values(errors).every(error => error === null),
-        [errors],
-    );
+    const errors = getErrors(state, config);
+    const isFormValid = Object.values(errors).every(error => error === null);
 
     useDeepCompareEffect(() => {
         const errors = validate(state.values, config.fields);
@@ -89,7 +84,7 @@ const useForm = (config = {}, submitCallback) => {
         };
     }
 
-    function onSubmit(event) {
+    function handleSubmit(event) {
         if (event) event.preventDefault();
         submitCallback && submitCallback({ values: state.values, isFormValid });
         dispatch({ type: SUBMIT });
